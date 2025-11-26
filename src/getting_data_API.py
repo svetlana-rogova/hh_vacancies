@@ -23,7 +23,7 @@ class Getting(ABC):
         pass
 
     @abstractmethod
-    def reading(self) -> List[Dict[str, Any]]:
+    def reading(self) -> Any:
         """Абстрактный метод для чтения данных из файла"""
         pass
 
@@ -49,33 +49,46 @@ class HH(Parser):
     """Класс для работы с API HeadHunter"""
 
     def __init__(self, file_worker: Any):
-        self.url = 'https://api.hh.ru/vacancies'
-        self.headers = {'User-Agent': 'HH-User-Agent'}
-        self.params: dict[str, str | int] = {'text': '', 'page': 0, 'per_page': 100}
-        self.vacancies: list[Dict[str, Any]] = []
+        self.__url = 'https://api.hh.ru/vacancies'
+        self.__headers = {'User-Agent': 'HH-User-Agent'}
+        self.__params: dict[str, str | int] = {'text': '', 'page': 0, 'per_page': 100}
+        self.__vacancies: list[Dict[str, Any]] = []
         super().__init__(file_worker)
 
-    def load_vacancies(self, keyword: str) -> None:
+    def __load_vacancies(self, keyword: str) -> None:
         """Метод для загрузки данных по API"""
-        self.params['text'] = keyword
-        while self.params.get('page') != 20:
-            response = requests.get(self.url, headers=self.headers, params=self.params)
-            vacancies = response.json()['items']
-            self.vacancies.extend(vacancies)
-            self.params['page'] = int(self.params['page']) + 1
+        self.__params['text'] = keyword
+        while self.__params.get('page') != 20:
+            response = requests.get(self.__url, headers=self.__headers, params=self.__params)
+            if response.status_code == 200:
+                vacancies = response.json()['items']
+                self.__vacancies.extend(vacancies)
+                self.__params['page'] = int(self.__params['page']) + 1
+            else:
+                print(f"Произошла ошибка. Статус-код: {response.status_code}")
 
-    def writing_in_file(self) -> None:
+    def __writing_in_file(self) -> None:
         """Реализация метода записи данных в файл"""
-        self.writing(self.vacancies)
+        self.writing(self.__vacancies)
 
-    def reading_file(self) -> Any:
+    def __reading_file(self) -> Any:
         """Реализация метода чтения файла"""
         return self.reading()
 
+    def load_vacancies(self, keyword: str) -> None:
+        self.__load_vacancies(keyword)
 
-file_worker = os.path.join(os.path.dirname(__file__), "..", "data", "vacancies_hh")
-hh = HH(file_worker)
-hh.load_vacancies("Python")
+    def writing_in_file(self) -> None:
+        self.__writing_in_file()
 
-hh.writing_in_file()
-print(hh.reading_file())
+    def reading_file(self) -> Any:
+        return self.__reading_file()
+
+
+if __name__ == "__main__":
+    file_worker = os.path.join(os.path.dirname(__file__), "..", "data", "vacancies_hh")
+    hh = HH(file_worker)
+    hh.load_vacancies("Python")
+
+    hh.writing_in_file()
+    print(hh.reading_file())
