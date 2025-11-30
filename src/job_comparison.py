@@ -1,13 +1,17 @@
 class Vacancies:
-    __slots__ = ['name', 'link', 'salary', 'description', 'city']
+    __slots__ = ['name', 'link', 'salary_from', 'salary_to', 'description', 'area', 'currency_vac', 'id_vac']
 
     """Класс для основных характеристик вакансии"""
-    def __init__(self, name: str, link: str, salary: int, description: str, city: str):
+    def __init__(self, name: str, link: str, salary_from: int, salary_to: int, description: str, area: str,
+                 currency_vac: str, id_vac: int):
         self.name = self.__valid_name(name)
         self.link = self.__valid_link(link)
-        self.salary = self.__valid_salary(salary)
+        self.salary_from = self.__valid_salary_from(salary_from)
+        self.salary_to = self.__valid_salary_to(salary_to)
         self.description = self.__valid_description(description)
-        self.city = self.__valid_city(city)
+        self.area = self.__valid_area(area)
+        self.currency_vac = self.__valid_currency_vac(currency_vac)
+        self.id_vac = self.__valid_id_vac(id_vac)
 
     @staticmethod
     def __valid_name(name: str) -> str:
@@ -21,11 +25,17 @@ class Vacancies:
             raise TypeError("Ссылка должна быть строкой")
         return link
 
-    def __valid_salary(self, salary: int) -> int:
-        if not salary or salary <= 0:
+    def __valid_salary_from(self, salary_from: int) -> int:
+        if not salary_from or salary_from <= 0:
             return 0
         else:
-            return salary
+            return salary_from
+
+    def __valid_salary_to(self, salary_to: int) -> int:
+        if not salary_to or salary_to <= 0:
+            return 0
+        else:
+            return salary_to
 
     @staticmethod
     def __valid_description(description: str) -> str:
@@ -34,39 +44,74 @@ class Vacancies:
         return description
 
     @staticmethod
-    def __valid_city(city: str) -> str:
-        if not isinstance(city, str):
+    def __valid_area(area: str) -> str:
+        if not isinstance(area, str):
             raise TypeError("Город должен быть передан строкой")
-        return city
+        return area
+
+    @staticmethod
+    def __valid_currency_vac(currency_vac: str) -> str:
+        if not isinstance(currency_vac, str):
+            raise TypeError("Валюта должна быть передана строкой")
+        return currency_vac
+
+    @staticmethod
+    def __valid_id_vac(id: int) -> int:
+        if not isinstance(id, int):
+            raise TypeError("Идентификатор должен быть передан числами")
+        return id
 
     def __le__(self, other: "Vacancies") -> bool:
         """Магический метод сравнения. Уступает или равна наша вакансия другой в зарплате?"""
         if not isinstance(other, Vacancies):
             raise TypeError
-        return self.salary <= other.salary
+        self_salary = self.salary_from or 0
+        other_salary = other.salary_from or 0
+        return self_salary <= other_salary
 
     def __ge__(self, other: "Vacancies") -> bool:
         """Магический метод сравнения. Лучше или равна наша вакансия по зарплате, другой?"""
         if not isinstance(other, Vacancies):
             raise TypeError
-        return self.salary >= other.salary
+        self_salary = self.salary_from or 0
+        other_salary = other.salary_from or 0
+        return self_salary >= other_salary
 
     def __lt__(self, other: "Vacancies") -> bool:
         """Магический метод сравнения. Уступает ли наша вакансия другой в зарплате?"""
         if not isinstance(other, Vacancies):
             raise TypeError
-        return self.salary < other.salary
+        self_salary = self.salary_from or 0
+        other_salary = other.salary_from or 0
+        return self_salary < other_salary
 
     def __gt__(self, other: "Vacancies") -> bool:
         """Магический метод сравнения. Лучше ли наша вакансия по зарплате, чем другая?"""
         if not isinstance(other, Vacancies):
             raise TypeError
-        return self.salary > other.salary
+        self_salary = self.salary_from or 0
+        other_salary = other.salary_from or 0
+        return self_salary > other_salary
+
+    def to_dict(self) -> dict:
+        """Метод для превращения вакансии в словарь"""
+        return {
+            "id": self.id_vac,
+            "name": self.name,
+            "alternate_url": self.link,
+            "salary": {
+                "from": self.salary_from,
+                "to": self.salary_to,
+                "currency": self.currency_vac
+            },
+            "area": {"name": self.area},
+            "snippet": {"responsibility": self.description}
+        }
 
 
 if __name__ == "__main__":
-    vac = Vacancies("Программист", "ссылка", 50000, "работа в офисе", "Москва")
-    vac1 = Vacancies("Программист2", "ссылка2", -5, "работа в офисе", "Питер")
-    print(vac1.salary)
+    vac = Vacancies("Программист", "ссылка", 50000, 10000, "работа в офисе", "Москва", "RUR", 123)
+    vac1 = Vacancies("Программист2", "ссылка2", -5,  10, "работа в офисе", "Питер", "RUR", 567)
+    print(vac1.salary_to)
     print(vac > vac1)
     print(vac <= vac1)

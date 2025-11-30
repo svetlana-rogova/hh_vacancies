@@ -13,7 +13,12 @@ class Getting(ABC):
     """Абстрактный класс для работы с API сервиса с вакансиями"""
 
     @abstractmethod
-    def load_vacancies(self, keyword: str) -> None:
+    def connect(self) -> Any:
+        """Абстрактный метод для подключения к API"""
+        pass
+
+    @abstractmethod
+    def load_vacancies(self, keyword: str) -> list[Dict[str, Any]]:
         """Абстрактный метод для загрузки данных по API"""
         pass
 
@@ -55,33 +60,48 @@ class HH(Parser):
         self.__vacancies: list[Dict[str, Any]] = []
         super().__init__(file_worker)
 
-    def __load_vacancies(self, keyword: str) -> None:
-        """Метод для загрузки данных по API"""
+    def __connect(self) -> Any:
+        """Приватный метод для подключения к API"""
+        response = requests.get(self.__url, headers=self.__headers, params=self.__params)
+        if response.status_code != 200:
+            print(f"Произошла ошибка. Статус-код: {response.status_code}")
+            return {}
+        return response.json()
+
+    def __load_vacancies(self, keyword: str) -> list[Dict[str, Any]]:
+        """Приватный метод для загрузки данных по API"""
         self.__params['text'] = keyword
         while self.__params.get('page') != 20:
-            response = requests.get(self.__url, headers=self.__headers, params=self.__params)
-            if response.status_code == 200:
-                vacancies = response.json()['items']
-                self.__vacancies.extend(vacancies)
-                self.__params['page'] = int(self.__params['page']) + 1
-            else:
-                print(f"Произошла ошибка. Статус-код: {response.status_code}")
+            data = self.__connect()
+            if not data:
+                break
+            vacancies = data['items']
+            self.__vacancies.extend(vacancies)
+            self.__params['page'] = int(self.__params['page']) + 1
+        return self.__vacancies
 
     def __writing_in_file(self) -> None:
-        """Реализация метода записи данных в файл"""
+        """Реализация приватного метода записи данных в файл"""
         self.writing(self.__vacancies)
 
     def __reading_file(self) -> Any:
-        """Реализация метода чтения файла"""
+        """Реализация приватного метода чтения файла"""
         return self.reading()
 
-    def load_vacancies(self, keyword: str) -> None:
-        self.__load_vacancies(keyword)
+    def connect(self) -> Any:
+        """Реализация метода для подключения к API"""
+        return self.__connect()
+
+    def load_vacancies(self, keyword: str) -> list[Dict[str, Any]]:
+        """Реализация метода для загрузки данных по API"""
+        return self.__load_vacancies(keyword)
 
     def writing_in_file(self) -> None:
+        """Реализация метода записи данных в файл"""
         self.__writing_in_file()
 
     def reading_file(self) -> Any:
+        """Реализация метода чтения файла"""
         return self.__reading_file()
 
 
