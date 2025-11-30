@@ -15,23 +15,31 @@ class Vacancies:
 
     @staticmethod
     def __valid_name(name: str) -> str:
+        """Метод для проверки соответствия названия вакансии"""
+        if not name.strip():
+            raise ValueError("Название вакансии не может быть пустым")
         if not isinstance(name, str):
             raise TypeError("Название должно передаваться строкой")
         return name
 
     @staticmethod
     def __valid_link(link: str) -> str:
+        """Метод для проверки соответствия типа ссылки"""
         if not isinstance(link, str):
             raise TypeError("Ссылка должна быть строкой")
         return link
 
-    def __valid_salary_from(self, salary_from: int) -> int:
+    @staticmethod
+    def __valid_salary_from(salary_from: int) -> int:
+        """Метод для проверки соответствия типа зарплаты"""
         if not salary_from or salary_from <= 0:
             return 0
         else:
             return salary_from
 
-    def __valid_salary_to(self, salary_to: int) -> int:
+    @staticmethod
+    def __valid_salary_to(salary_to: int) -> int:
+        """Метод для проверки соответствия типа зарплаты"""
         if not salary_to or salary_to <= 0:
             return 0
         else:
@@ -39,24 +47,28 @@ class Vacancies:
 
     @staticmethod
     def __valid_description(description: str) -> str:
+        """Метод для проверки соответствия типа описания вакансии"""
         if not isinstance(description, str):
             raise TypeError("Описание должно быть строкой")
         return description
 
     @staticmethod
     def __valid_area(area: str) -> str:
+        """Метод для проверки соответствия типа города"""
         if not isinstance(area, str):
             raise TypeError("Город должен быть передан строкой")
         return area
 
     @staticmethod
     def __valid_currency_vac(currency_vac: str) -> str:
+        """Метод для проверки соответствия типа валюты"""
         if not isinstance(currency_vac, str):
             raise TypeError("Валюта должна быть передана строкой")
         return currency_vac
 
     @staticmethod
     def __valid_id_vac(id: int) -> int:
+        """Метод для проверки соответствия типа идентификатора"""
         if not isinstance(id, int):
             raise TypeError("Идентификатор должен быть передан числами")
         return id
