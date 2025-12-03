@@ -1,9 +1,9 @@
 class Vacancies:
-    __slots__ = ['name', 'link', 'salary_from', 'salary_to', 'description', 'area', 'currency_vac', 'id_vac']
+    __slots__ = ['name', 'link', 'salary_from', 'salary_to', 'description', 'area', 'currency_vac', 'id']
 
     """Класс для основных характеристик вакансии"""
     def __init__(self, name: str, link: str, salary_from: int, salary_to: int, description: str, area: str,
-                 currency_vac: str, id_vac: int):
+                 currency_vac: str, id: int):
         self.name = self.__valid_name(name)
         self.link = self.__valid_link(link)
         self.salary_from = self.__valid_salary_from(salary_from)
@@ -11,7 +11,7 @@ class Vacancies:
         self.description = self.__valid_description(description)
         self.area = self.__valid_area(area)
         self.currency_vac = self.__valid_currency_vac(currency_vac)
-        self.id_vac = self.__valid_id_vac(id_vac)
+        self.id = self.__valid_id(id)
 
     @staticmethod
     def __valid_name(name: str) -> str:
@@ -67,7 +67,7 @@ class Vacancies:
         return currency_vac
 
     @staticmethod
-    def __valid_id_vac(id: int) -> int:
+    def __valid_id(id: int) -> int:
         """Метод для проверки соответствия типа идентификатора"""
         if not isinstance(id, int):
             raise TypeError("Идентификатор должен быть передан числами")
@@ -108,17 +108,16 @@ class Vacancies:
     def to_dict(self) -> dict:
         """Метод для превращения вакансии в словарь"""
         return {
-            "id": self.id_vac,
+            "id": self.id,
             "name": self.name,
-            "alternate_url": self.link,
+            "link": self.link,
             "salary": {
                 "from": self.salary_from,
                 "to": self.salary_to,
                 "currency": self.currency_vac
             },
             "area": {"name": self.area},
-            "snippet": {"responsibility": self.description}
-        }
+            "snippet": {"responsibility": self.description}}
 
 
 if __name__ == "__main__":
@@ -127,3 +126,4 @@ if __name__ == "__main__":
     print(vac1.salary_to)
     print(vac > vac1)
     print(vac <= vac1)
+    print(vac == vac1)

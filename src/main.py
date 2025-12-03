@@ -17,8 +17,9 @@ file_worker = os.path.join(os.path.dirname(__file__), "..", "data", "vacancies_h
 hh_demo = HH(file_worker)
 hh_demo.load_vacancies("Python")
 
-# Пример работы контструктора класса с одной вакансией
+# Пример работы контструктора класса
 vacancy = Vacancies("Программист", "ссылка", 50000, 100000, "работа в офисе", "Москва", "RUR", 111)
+vacancy2 = Vacancies("Программист", "ссылка", 50000, 10000, "работа в офисе", "Москва", "RUR", 123)
 answer = WorkingDataJSON()
 answer.add_info(vacancy)
 answer.delete_vac(111)
@@ -46,3 +47,8 @@ def user_interaction() -> Any:
 
 if __name__ == "__main__":
     print(user_interaction())
+    answer.add_info(vacancy)
+    answer.delete_vac(111)
+    print(vacancy > vacancy2)
+    print(vacancy <= vacancy2)
+    hh_demo.load_vacancies("Python")

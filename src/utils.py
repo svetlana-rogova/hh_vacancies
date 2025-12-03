@@ -4,7 +4,7 @@ from src.job_comparison import Vacancies
 
 
 def formater(vacancies_data: list[dict[str, Any]]) -> list[Vacancies]:
-    """Функция, которая приводит вывод вакансий в понятный человеку формат"""
+    """Функция, которая способствует выводу вакансий в понятный человеку формат"""
     answer = []
     for dict_vacancies in vacancies_data:
         description = dict_vacancies.get("snippet", {}).get("responsibility") or "не указаны"
@@ -24,18 +24,18 @@ def formater(vacancies_data: list[dict[str, Any]]) -> list[Vacancies]:
             except (ValueError, TypeError):
                 salary_to = salary_from
             currency_vac = salary_raw.get("currency") or "не указана"
-        id_vac_raw = dict_vacancies.get("id")
-        id_vac: int = 0
-        if id_vac_raw is not None:
+        id_raw = dict_vacancies.get("id")
+        id: int = 0
+        if id_raw is not None:
             try:
-                id_vac = int(id_vac_raw)
+                id = int(id_raw)
             except (ValueError, TypeError):
-                id_vac = 0
+                id = 0
         answer.append(Vacancies(name=str(dict_vacancies.get("name")),
                                 area=str(dict_vacancies.get("area", {}).get("name", "не указан")),
                                 link=str(dict_vacancies.get('alternate_url', "не указана")),
                                 description=str(description),
-                                id_vac=id_vac,
+                                id=id,
                                 salary_from=int(salary_from),
                                 salary_to=int(salary_to),
                                 currency_vac=str(currency_vac)))
@@ -65,6 +65,7 @@ def filter_vacancies_by_words(filtered_vacancies: list[dict[str, Any]],
         for word in filter_words:
             if word.lower() in text:
                 filter_vac_words.append(dict_vac)
+                break
     return filter_vac_words
 
 

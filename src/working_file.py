@@ -63,10 +63,19 @@ class WorkingDataJSON(WorkingFile):
                 data_info = json.load(f)
                 answer = []
                 for dict_data in data_info:
+                    flag = False
                     for value in dict_data.values():
-                        if isinstance(value, str) and criteria.lower() in value.lower():
+                        if isinstance(value, dict):
+                            for val in value.values():
+                                if isinstance(val, str) and criteria.lower() in val.lower():
+                                    flag = True
+                                    break
+                        elif isinstance(value, str) and criteria.lower() in value.lower():
+                            flag = True
+                        if flag:
                             formatted = formater([dict_data])[0]
                             answer.append(formatted)
+                            break
                 return answer if answer else "Данный критерий отсутствует в файле"
         except FileNotFoundError:
             return "Файл не найден"
@@ -76,14 +85,14 @@ class WorkingDataJSON(WorkingFile):
         with open(self.file_vac, 'r+') as f:
             f.truncate(0)
 
-    def delete_vac(self, id_vac: int) -> None:
+    def delete_vac(self, id: int) -> None:
         """Метод для удаления вакансии из файла по id"""
         try:
             with open(self.file_vac, "r", encoding="UTF8") as f:
                 data_json = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             data_json = []
-        data = [vac for vac in data_json if vac.get("id") != id_vac]
+        data = [vac for vac in data_json if vac.get("id") != id]
         with open(self.file_vac, "w", encoding="UTF8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
@@ -92,3 +101,4 @@ if __name__ == "__main__":
     answer = WorkingDataJSON()
     vacancy = Vacancies("Программист", "ссылка", 50000, 100000, "работа в офисе", "Москва", "RUR", 111)
     answer.add_info(vacancy)
+    print(answer.get("Программист"))
